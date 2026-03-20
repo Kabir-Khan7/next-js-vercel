@@ -30,9 +30,22 @@ export default function AppLayout({ children }: Props) {
   const [sideOpen, setSideOpen] = useState(false);
 
   const logout = useCallback(async () => {
-    try { await fetch("http://localhost:8000/auth/logout", { method: "POST", credentials: "include" }); } catch {}
-    router.push("/login");
-  }, [router]);
+  try {
+    await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/auth/logout`, {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+        ...(typeof window !== "undefined" && localStorage.getItem("psx_token")
+          ? { Authorization: `Bearer ${localStorage.getItem("psx_token")}` }
+          : {}),
+        },
+      });
+     } catch {}
+    // Clear the stored token
+      if (typeof window !== "undefined") localStorage.removeItem("psx_token");
+      router.push("/login");
+    }, [router]);
 
   useEffect(() => {
     apiGet<{ email: string }>("/auth/me").then(setUser).catch(() => router.push("/login"));
