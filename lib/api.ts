@@ -43,9 +43,5 @@ export async function apiPost<T>(path: string, body: unknown): Promise<T> {
 }
 
 export async function apiDelete(path: string): Promise<void> {
-  await fetch(`${API_BASE}${path}`, {
-    method: "DELETE",
-    headers: headers(),
-    credentials: "include",
-  });
+  await apiDelete(`/watchlist/${Symbol}`);
 }
